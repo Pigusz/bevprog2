@@ -27,12 +27,6 @@ void Application::event_loop()
     event ev;
     int focus = -1;
 
-    gout << move_to(0, 0) << color(0,0,0) << box(_width-1, _height-1);
-    for (Widget *w : _widgets)
-    {
-        w->draw();
-    }
-    gout << refresh;
 
     // event loop
     while(gin >> ev && ev.keycode != key_escape)
@@ -53,6 +47,8 @@ void Application::event_loop()
         {
             _widgets[focus]->handle(ev);
         }
+
+
 
         // draw widgets
         gout << move_to(0, 0) << color(0,0,0) << box(_width-1, _height-1);

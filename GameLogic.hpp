@@ -1,17 +1,19 @@
 #ifndef GAMELOGIC_HPP_INCLUDED
 #define GAMELOGIC_HPP_INCLUDED
+
 #include <vector>
 
-
-class Move {
-protected:
-    int _r,_c,_g;
+class GameLogic {
 public:
-    Move(int r,int c, int g);
+    int bestRow, bestCol;
+    int _g;
+
+    GameLogic(int g);
     bool isMovesLeft(const std::vector<std::vector<int>>& grid);
-    void findBestMove(std::vector<std::vector<int>> _grid);
-    int evaluate(std::vector<std::vector<int>> _grid);
-    int minimax(std::vector<std::vector<int>> _grid, bool isMax);
+    int evaluate(const std::vector<std::vector<int>>& grid);
+    int minimax(std::vector<std::vector<int>>& grid, int depth, bool isMax, int alpha, int beta);
+    void findBestMove(std::vector<std::vector<int>> grid);
+    bool hasNeighbor(const std::vector<std::vector<int>>& grid, int r, int c);
 };
 
 #endif // GAMELOGIC_HPP_INCLUDED
