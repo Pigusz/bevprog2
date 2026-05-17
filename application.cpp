@@ -3,8 +3,9 @@
 
 using namespace genv;
 
+
 Application::Application(int w, int h)
-    : _width(w), _height(h)
+    : _width(w), _height(h), _animation_on(false)
 {
     gout.open(_width, _height);
 }
@@ -28,7 +29,14 @@ void Application::event_loop()
     int focus = -1;
 
 
-    // event loop
+    gout << move_to(0, 0) << color(0,0,0) << box(_width-1, _height-1);
+    for (Widget *w : _widgets)
+    {
+        w->draw();
+    }
+    gout << refresh;
+
+    // The main event loop
     while(gin >> ev && ev.keycode != key_escape)
     {
         if (ev.type == ev_mouse && ev.button == btn_left)
@@ -48,8 +56,6 @@ void Application::event_loop()
             _widgets[focus]->handle(ev);
         }
 
-
-
         // draw widgets
         gout << move_to(0, 0) << color(0,0,0) << box(_width-1, _height-1);
         for (Widget *w : _widgets)
@@ -57,7 +63,6 @@ void Application::event_loop()
             w->draw();
         }
         gout << refresh;
-
     }
 }
 

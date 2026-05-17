@@ -7,6 +7,7 @@
 #include "widgets.hpp"
 #include "GameLogic.hpp"
 #include "TextBox.hpp"
+#include "Button.hpp"
 
 using namespace std;
 using namespace genv;
@@ -43,17 +44,29 @@ public:
 
         // 2. Initialize the status display
         statusDisplay = new StatusWidget(this, 20, H + 12, W - 40, STATUS_H, gameStatus);
+        // 3. Initialize Buttons
+        bt1 = new Button(this, 300,600, 120, STATUS_H, "Animation on", "on");
+        bt2 = new Button(this, 450, 600, 120, STATUS_H, "Animation off", "off");
     }
 
-    // Handles notifications sent from individual cell widgets
+
     void action(string id) override {
-        size_t delimiterPos = id.find("_");
-        if (delimiterPos != string::npos) {
-            int r = stoi(id.substr(0, delimiterPos));
-            int c = stoi(id.substr(delimiterPos + 1));
-            handlePlayerMove(r, c);
-        }
+    if (id == "on") {
+        set_animation(true);
+        return;
     }
+    if (id == "off") {
+        set_animation(false);
+        return;
+    }
+
+    size_t delimiterPos = id.find("_");
+    if (delimiterPos != string::npos) {
+        int r = stoi(id.substr(0, delimiterPos));
+        int c = stoi(id.substr(delimiterPos + 1));
+        handlePlayerMove(r, c);
+    }
+}
 
     void handlePlayerMove(int r, int c) {
         if (occupation[r][c] != 0) return; // Prevent overwriting cells
@@ -89,11 +102,12 @@ protected:
     GameLogic logic;
     string gameStatus;
     StatusWidget* statusDisplay;
+    Button* bt1;
+    Button* bt2;
 };
 
 int main()
 {
-    // The total window will be 600 wide and 640 high
     MyApp app(W, H);
     app.event_loop();
     return 0;

@@ -1,5 +1,7 @@
 #include "checkbox.hpp"
 #include <cmath>
+#include <fstream>
+#include <sstream>
 
 using namespace genv;
 using namespace std;
@@ -10,6 +12,42 @@ CheckBox::CheckBox(Application *parent, int x, int y, int w, int h, std::string 
 }
 
 void CheckBox::draw() const {
+    // 1. Check if custom asset animations are active
+    if (_parent && _parent->is_animation_on()) {
+        std::string filename = "plain.rgbszovegfajl";
+        if (_state == 1) filename = "p6.rgbszovegfajl"; // Player asset
+        if (_state == 2) filename = "a6.rgbszovegfajl";     // AI asset
+
+        std::ifstream file(filename);
+        if (file.is_open()) {
+            int r, g, b;
+            int pixel_y = 0;
+            std::string line;
+
+
+            while (std::getline(file, line)) {
+                std::stringstream ss(line);
+                int pixel_x = 0;
+
+
+                while (ss >> r >> g >> b) {
+
+                    if (pixel_x < _sx && pixel_y < _sy) {
+                        gout << move_to(_x + pixel_x, _y + pixel_y)
+                             << color(r, g, b) << dot;
+                    }
+                    pixel_x++;
+                }
+                if (pixel_x > 0) {
+                    pixel_y++;
+                }
+            }
+            file.close();
+            return;
+        }
+    }
+
+    // 2. Fallback Default Drawing
     gout << move_to(_x, _y) << color(255, 255, 255) << box(_sx, _sy);
     gout << move_to(_x+2, _y+2) << color(0,0,0) << box(_sx-4, _sy-4);
 
@@ -32,11 +70,14 @@ void CheckBox::draw() const {
     }
 }
 
-void CheckBox::handle(event ev) {
-    if (ev.type == ev_mouse && ev.button == btn_left && _state == 0) {
-        _parent->action(_id); // Trigger the application action
+void CheckBox::handle(genv::event ev) {
+    if (ev.type == ev_mouse && ev.button == btn_left) {
+        if (_state == 0) {
+            _parent->action(_id);
+        }
     }
 }
+
 
 void CheckBox::setState(int s) { _state = s; }
 int CheckBox::getState() const { return _state; }
